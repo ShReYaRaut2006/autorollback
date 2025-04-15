@@ -78,7 +78,7 @@ pipeline {
             steps {
                 script {
                     // Dynamically fetch public IP using AWS CLI (based on instance name tag, update if needed)
-                    def PUBLIC_IP = sh(script: "aws ec2 describe-instances --filters \"Name=tag:Name,Values=AppServer\" \"Name=instance-state-name,Values=running\" --query 'Reservations[*].Instances[*].PublicIpAddress' --output text", returnStdout: true).trim()
+                    def PUBLIC_IP = "100.26.61.200:8000"
 
                     def subject = env.DEPLOYMENT_SUCCESS == "true" ? "✅ Deployment Successful" : "⚠️ Deployment Failed - Rollback Triggered"
                     def body = env.DEPLOYMENT_SUCCESS == "true" ?
