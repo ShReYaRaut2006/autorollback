@@ -77,18 +77,58 @@ pipeline {
         stage('Send Email Notification') {
             steps {
                 script {
-                    // Dynamically fetch public IP using AWS CLI (based on instance name tag, update if needed)
-                    def PUBLIC_IP = "100.26.61.200:8000"
+                    def subject = ''
+                    def body = ''
+                    def recipient = "${env.RECIPIENT}"
+                    def appIp = "http://100.26.61.200:8000"
+                    def buildUrl = "${env.BUILD_URL}"
 
-                    def subject = env.DEPLOYMENT_SUCCESS == "true" ? "✅ Deployment Successful" : "⚠️ Deployment Failed - Rollback Triggered"
-                    def body = env.DEPLOYMENT_SUCCESS == "true" ?
-                        "Your app was successfully deployed.\n\nAccess it at: http://${PUBLIC_IP}" :
-                        "Deployment failed. Auto rollback has been triggered.\n\nApp is available at: http://${PUBLIC_IP}"
+                    if (env.DEPLOYMENT_SUCCESS == "true") {
+                        subject = "✅ Deployment Successful"
+                        body = """
+                        <html>
+                        <body>
+                            <p>Hello,</p>
 
-                    emailext (
+                            <p>✅ Your app has been successfully deployed.</p>
+
+                            <p>🌐 Access it at: <a href="${appIp}">${appIp}</a></p>
+
+                            <p>🔍 <a href="${buildUrl}">View Jenkins Console Output</a></p>
+
+                            <br>
+                            <p>Regards,<br>
+                            Jenkins Deployment Pipeline</p>
+                        </body>
+                        </html>
+                        """
+                    } else {
+                        subject = "❌ Deployment Failed - Auto Rollback Triggered"
+                        body = """
+                        <html>
+                        <body>
+                            <p>Hello,</p>
+
+                            <p>❌ Deployment failed. Auto rollback has been triggered.</p>
+                            <p>✅ Your app is running with the previous stable version.</p>
+
+                            <p>🌐 Access it at: <a href="${appIp}">${appIp}</a></p>
+
+                            <p>📄 <a href="${buildUrl}">Check Jenkins Console Output</a> for more details.</p>
+
+                            <br>
+                            <p>Regards,<br>
+                            Jenkins Deployment Pipeline</p>
+                        </body>
+                        </html>
+                        """
+                    }
+
+                    emailext(
                         subject: subject,
                         body: body,
-                        to: "${env.RECIPIENT}"
+                        to: recipient,
+                        mimeType: 'text/html'
                     )
                 }
             }
