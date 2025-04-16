@@ -2,9 +2,9 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = '123shreya/autorollback'  // Updated image name for Shreya
+        IMAGE_NAME = '123shreya/autorollback'  
         VERSION_FILE = '/var/lib/jenkins/version_data/version.txt'
-        RECIPIENT = 'shreyaraut002@gmail.com'  // Replace with actual recipient email
+        RECIPIENT = 'shreyaraut002@gmail.com'  
     }
 
     stages {
